@@ -203,7 +203,30 @@ customer_history_df.recency.describe()
 # In[27]:
 
 
+x = customer_history_df.recency
+mu = np.mean(customer_history_df.recency)
+sigma = math.sqrt(np.var(customer_history_df.recency))
+n, bins, patches = plt.hist(x, 1000, facecolor='green', alpha=0.75)
+# add a 'best fit' line
+y = mlab.normpdf(bins, mu, sigma)
+l = plt.plot(bins, y, 'r--', linewidth=2)
+plt.xlabel('Recency in days')
+plt.ylabel('Number of transactions')
+plt.title(r'$\mathrm{Histogram\ of\ sales\ recency}\ $')
+plt.grid(True)
 
+
+# # Build Frequency & Monetary value Features
+
+# In[28]:
+
+
+customer_monetary_val = cs_df[['CustomerID', 'amount']].groupby("CustomerID").sum().reset_index()
+customer_history_df = customer_history_df.merge(customer_monetary_val, how='outer')
+customer_history_df.amount = customer_history_df.amount+0.001
+customer_freq = cs_df[['CustomerID', 'amount']].groupby("CustomerID").count().reset_index()
+customer_freq.rename(columns={'amount':'frequency'},inplace=True)
+customer_history_df = customer_history_df.merge(customer_freq, how='outer')
 
 
 # Remove returns so that we only have purchases of a customer
