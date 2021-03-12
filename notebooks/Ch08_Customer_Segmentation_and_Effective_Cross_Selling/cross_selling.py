@@ -108,26 +108,6 @@ data_gro_1 = Orange.data.Table.from_numpy(domain=domain_grocery,  X=input_assoc_
 # In[2]:
 
 
-def prune_dataset(input_df, length_trans = 2, total_sales_perc = 0.5, start_item = None, end_item = None):
-    if 'total_items' in input_df.columns:
-        del(input_df['total_items'])
-    item_count = input_df.sum().sort_values(ascending = False).reset_index()
-    total_items = sum(input_df.sum().sort_values(ascending = False))
-    item_count.rename(columns={item_count.columns[0]:'item_name',item_count.columns[1]:'item_count'}, inplace=True)
-    if not start_item and not end_item: 
-        item_count['item_perc'] = item_count['item_count']/total_items
-        item_count['total_perc'] = item_count.item_perc.cumsum()
-        selected_items = list(item_count[item_count.total_perc < total_sales_perc].item_name)
-        input_df['total_items'] = input_df[selected_items].sum(axis = 1)
-        input_df = input_df[input_df.total_items >= length_trans]
-        del(input_df['total_items'])
-        return input_df[selected_items], item_count[item_count.total_perc < total_sales_perc]
-    elif end_item > start_item:
-        selected_items = list(item_count[start_item:end_item].item_name)
-        input_df['total_items'] = input_df[selected_items].sum(axis = 1)
-        input_df = input_df[input_df.total_items >= length_trans]
-        del(input_df['total_items'])
-        return input_df[selected_items],item_count[start_item:end_item]
 
 
 # In[35]:
